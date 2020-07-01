@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    # if any of cert-manager
+    cert-manager.io/cluster-issuer: letsencrypt-wildcard-cert-manager
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-ssl-name: "vault"
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
+    nginx.ingress.kubernetes.io/proxy-ssl-protocol: "TLSv1 TLSv1.1 TLSv1.2 TLSv1.3"
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+  labels:
+    app: vault
+  name: vault
+  namespace: vault
+spec:
+  rules:
+  - host: vault.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: vault
+          servicePort: 8200
+        path: /
+  tls:
+  - hosts:
+    - vault.example.com
+    secretName: example-com-tls
